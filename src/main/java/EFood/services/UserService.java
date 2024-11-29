@@ -4,30 +4,35 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import EFood.models.User;
+import EFood.models.UserModel;
 import EFood.repositories.UserRepository;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public User registerUser(User user) {
+    public UserModel registerUser(UserModel user) {
+        var rawPassword = user.getPassword();
+        var hashedPassword = encoder.encode(rawPassword);
+        user.setPassword(hashedPassword);
         return userRepository.save(user);
     }
 
-    public Optional<User> getUserByID(Long id) {
+    public Optional<UserModel> getUserByID(Long id) {
         return userRepository.findById(id);
     }
 
-    public List<User> getAllUser() {
+    public List<UserModel> getAllUser() {
         return userRepository.findAll();
 
     }
 
-    public User updateUser(Long id, User user) {
+    public UserModel updateUser(Long id, UserModel user) {
         var oldUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         if (user.getName() != null) {
             oldUser.setName(user.getName());
@@ -44,6 +49,10 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public Optional<UserModel> findByPhoneNumber(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber);
     }
 
 }

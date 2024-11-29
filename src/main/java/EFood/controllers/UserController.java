@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import EFood.config.ApiResponse;
-import EFood.models.User;
+import EFood.models.UserModel;
 import EFood.services.UserService;
 
 @RestController
@@ -22,9 +23,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        var result = userService.registerUser(user);
-        return ResponseEntity.ok(new ApiResponse("Registered Successful", true, result));
+    public ResponseEntity<?> registerUser(@RequestBody UserModel user) {
+        try {
+            var result = userService.registerUser(user);
+            return ResponseEntity.ok(new ApiResponse("Registered Successful", true, result));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(new ApiResponse(e.getMessage(), false, null));
+        }
     }
 
     @GetMapping("/{id}")
@@ -47,8 +52,22 @@ public class UserController {
         }
     }
 
+    @GetMapping("/phone")
+    public ResponseEntity<?> getByPhoneNumber(@RequestParam("PhoneNumber") String phoneNumber) {
+        var result = userService.findByPhoneNumber(phoneNumber);
+        try {
+            if (result.isPresent()) {
+                return ResponseEntity.ok(new ApiResponse("user found", true, result));
+            } else {
+                return ResponseEntity.ok(new ApiResponse("user not found", false, null));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(new ApiResponse(e.getMessage(), false, null));
+        }
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserModel user) {
         try {
             var result = userService.updateUser(id, user);
             return ResponseEntity.ok(new ApiResponse("Updating successfull", true, result));
