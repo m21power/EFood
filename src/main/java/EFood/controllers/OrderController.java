@@ -1,9 +1,8 @@
 package EFood.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import EFood.config.ApiResponse;
-import EFood.models.OrderItemModel;
-import EFood.models.OrderModel;
 import EFood.services.OrderService;
 import EFood.utils.OrderRequest;
 import EFood.utils.UpdateOrderRequest;
@@ -26,6 +23,8 @@ import EFood.utils.UpdateOrderRequest;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest) {
@@ -65,6 +64,8 @@ public class OrderController {
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestParam String status) {
         try {
             var order = orderService.updateStatus(id, status);
+            // Broadcast the update to the subscribed clients
+            messagingTemplate.convertAndSend("/topic/orders/" + id, status);
             return ResponseEntity.ok(new ApiResponse("status updated successfully", true, order));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
