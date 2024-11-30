@@ -44,6 +44,9 @@ public class UserService {
             oldUser.setPhoneNumber(user.getPhoneNumber());
 
         }
+        if (user.getIsAdmin() != null) {
+            oldUser.setIsAdmin(user.getIsAdmin());
+        }
         return userRepository.save(oldUser);
     }
 

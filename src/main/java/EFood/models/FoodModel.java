@@ -19,8 +19,27 @@ public class FoodModel {
     private String imageUrl;
     @Column(nullable = false)
     private double price;
-    @Column(nullable = false)
-    private Boolean isAvailable;
+    private Boolean isAvailable = true;
+
+    public FoodModel(String name, String description, String imageUrl, double price) {
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.price = price;
+        this.isAvailable = true;
+    }
+
+    public FoodModel() {
+
+    }
+
+    public FoodModel(String name, String description, String imageUrl, double price, Boolean isAvailable) {
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.price = price;
+        this.isAvailable = isAvailable;
+    }
 
     public void setName(String name) {
         this.name = name;

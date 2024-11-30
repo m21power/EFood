@@ -16,6 +16,7 @@ public class UserModel {
     private String phoneNumber;
     @Column(nullable = false)
     private String password;
+    private Boolean isAdmin = false;
 
     public UserModel() {
     }
@@ -25,10 +26,15 @@ public class UserModel {
         this.password = password;
     }
 
-    public UserModel(String name, String phoneNumber, String password) {
+    public UserModel(String name, String phoneNumber, String password, Boolean isAdmin) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.password = password;
+        this.isAdmin = isAdmin;
+    }
+
+    public void setIsAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     public void setName(String name) {
@@ -57,6 +63,10 @@ public class UserModel {
 
     public String getPassword() {
         return this.password;
+    }
+
+    public Boolean getIsAdmin() {
+        return this.isAdmin;
     }
 
     @Override
