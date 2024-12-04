@@ -13,7 +13,7 @@ public class FoodModel {
     private Long id;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
     @Column(nullable = false)
     private String imageUrl;

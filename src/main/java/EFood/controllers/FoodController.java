@@ -9,20 +9,37 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import EFood.config.ApiResponse;
 import EFood.models.FoodModel;
 import EFood.services.FoodService;
+import EFood.utils.CloudinaryService;
 
 @RestController
 @RequestMapping("/api/foods")
 public class FoodController {
     @Autowired
     private FoodService foodService;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @PostMapping
-    public ResponseEntity<?> createFood(@RequestBody FoodModel food) {
+    public ResponseEntity<?> createFood(
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("price") double price
+
+    ) {
+        var image_url = cloudinaryService.uploadFile(image);
+        var food = new FoodModel();
+        food.setDescription(description);
+        food.setName(name);
+        food.setPrice(price);
+        food.setImageUrl(image_url);
         var result = foodService.createFood(food);
         return ResponseEntity.ok(new ApiResponse("food posted successfully", true, result));
     }

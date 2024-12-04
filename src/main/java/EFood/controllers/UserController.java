@@ -11,16 +11,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import EFood.config.ApiResponse;
 import EFood.models.UserModel;
 import EFood.services.UserService;
+import EFood.utils.CloudinaryService;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
+    @PostMapping("/admin")
+    public ResponseEntity<?> registerAdmin(
+            @RequestParam("logo") MultipartFile logo,
+            @RequestParam("name") String name,
+            @RequestParam("phoneNumber") String phoneNumber,
+            @RequestParam("password") String password
+
+    ) {
+        try {
+            var image_url = cloudinaryService.uploadFile(logo);
+            var user = new UserModel();
+            user.setIsAdmin(true);
+            user.setLogoUrl(image_url);
+            user.setPassword(password);
+            user.setPhoneNumber(phoneNumber);
+            user.setName(name);
+
+            var result = userService.registerUser(user);
+            return ResponseEntity.ok(new ApiResponse("Registered Successful", true,
+                    result));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(new ApiResponse(e.getMessage(), false, null));
+        }
+    }
 
     @PostMapping
     public ResponseEntity<?> registerUser(@RequestBody UserModel user) {

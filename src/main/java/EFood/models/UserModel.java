@@ -17,6 +17,7 @@ public class UserModel {
     @Column(nullable = false)
     private String password;
     private Boolean isAdmin = false;
+    private String logoUrl = "";
 
     public UserModel() {
     }
@@ -26,11 +27,20 @@ public class UserModel {
         this.password = password;
     }
 
-    public UserModel(String name, String phoneNumber, String password, Boolean isAdmin) {
+    public UserModel(String name, String phoneNumber, String password, String logoUrl, Boolean isAdmin) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.isAdmin = isAdmin;
+        this.logoUrl = logoUrl;
+    }
+
+    public void setLogoUrl(String url) {
+        this.logoUrl = url;
+    }
+
+    public String getLogoUrl() {
+        return this.logoUrl;
     }
 
     public void setIsAdmin(Boolean isAdmin) {
