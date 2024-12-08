@@ -16,10 +16,17 @@ public class UserService {
     private UserRepository userRepository;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UserModel registerUser(UserModel user) {
-        var rawPassword = user.getPassword();
-        var hashedPassword = encoder.encode(rawPassword);
-        user.setPassword(hashedPassword);
+    // public UserModel signUp(signUpPayload payload) {
+    // var rawPassword = payload.getPassword();
+    // var hashedPassword = encoder.encode(rawPassword);
+    // payload.setPassword(hashedPassword);
+    // UserModel user = new UserModel();
+    // user.setName(payload.getName());
+    // user.setPassword(payload.getPassword());
+    // user.setPhoneNumber(payload.getPhoneNumber());
+    // return userRepository.save(user);
+    // }
+    public UserModel registerAdmin(UserModel user) {
         return userRepository.save(user);
     }
 

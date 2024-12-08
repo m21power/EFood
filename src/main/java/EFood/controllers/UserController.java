@@ -2,6 +2,7 @@ package EFood.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class UserController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/admin")
     public ResponseEntity<?> registerAdmin(
             @RequestParam("logo") MultipartFile logo,
@@ -43,7 +45,7 @@ public class UserController {
             user.setPhoneNumber(phoneNumber);
             user.setName(name);
 
-            var result = userService.registerUser(user);
+            var result = userService.registerAdmin(user);
             return ResponseEntity.ok(new ApiResponse("Registered Successful", true,
                     result));
         } catch (Exception e) {
@@ -51,15 +53,17 @@ public class UserController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> registerUser(@RequestBody UserModel user) {
-        try {
-            var result = userService.registerUser(user);
-            return ResponseEntity.ok(new ApiResponse("Registered Successful", true, result));
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(new ApiResponse(e.getMessage(), false, null));
-        }
-    }
+    // @PostMapping
+    // public ResponseEntity<?> signUp(@RequestBody UserModel user) {
+    // try {
+    // var result = userService.signUp(user);
+    // return ResponseEntity.ok(new ApiResponse("Registered Successful", true,
+    // result));
+    // } catch (Exception e) {
+    // return ResponseEntity.status(404).body(new ApiResponse(e.getMessage(), false,
+    // null));
+    // }
+    // }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserByID(@PathVariable Long id) {
@@ -71,6 +75,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllUser() {
         var result = userService.getAllUser();
@@ -81,6 +86,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/phone")
     public ResponseEntity<?> getByPhoneNumber(@RequestParam("PhoneNumber") String phoneNumber) {
         var result = userService.findByPhoneNumber(phoneNumber);
