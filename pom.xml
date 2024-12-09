@@ -18,6 +18,13 @@
         <java.version>17</java.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>cloudinary</id>
+            <url>https://repo.cloudinary.com/artifactory/maven</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- Spring Boot Starters -->
         <dependency>
@@ -88,6 +95,7 @@
             <version>0.11.5</version>
             <scope>runtime</scope>
         </dependency>
+        
     </dependencies>
 
     <build>

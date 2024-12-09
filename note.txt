@@ -1,2 +1,14 @@
 1 - authentication
 2 - logo and image of the food 
+
+// .exceptionHandling(exceptionHandling -> exceptionHandling
+                                // .authenticationEntryPoint((request, response, authException) -> {
+                                // response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                                // response.getWriter()
+                                // .write("{\"error\": \"Unauthorized access. Please log in.\"}");
+                                // })
+                                // .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                // response.setStatus(HttpStatus.FORBIDDEN.value());
+                                // response.getWriter().write(
+                                // "{\"error\": \"You do not have permission to access this resource.\"}");
+                                // })) // authentication

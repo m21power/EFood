@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import EFood.Payloads.loginPayload;
 import EFood.Payloads.signUpPayload;
@@ -13,6 +14,7 @@ import EFood.services.AuthenticationService;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/auth")
+@RestController
 public class AuthController {
     @Autowired
     private AuthenticationService authenticationService;
@@ -29,8 +31,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody loginPayload loginDto, HttpServletResponse response) {
+        // throw new AccessDeniedException("here");
         authenticationService.authenticate(loginDto, response);
-        return ResponseEntity.ok("Logged in successfully");
+        return ResponseEntity.ok(new ApiResponse("Logged in successfully", true, null));
     }
 
 }

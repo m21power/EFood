@@ -3,6 +3,7 @@ package EFood.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -30,11 +31,21 @@ public class SecurityConfiguration {
                 http.csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/auth/**").permitAll() // Public endpoints
-                                                .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN") // Users or
-                                                                                                        // admin can
-                                                                                                        // access
+                                                .requestMatchers("/api/foods/**").hasRole("ADMIN")
+                                                .requestMatchers("/api/orders/**").hasAnyRole("ADMIN", "USER")
+                                                .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "USER")
                                                 .anyRequest().authenticated()) // All other requests require
-                                                                               // authentication
+                                .exceptionHandling(exceptionHandling -> exceptionHandling
+                                                .authenticationEntryPoint((request, response, authException) -> {
+                                                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                                                        response.getWriter()
+                                                                        .write("{\"error\": \"Unauthorized access. Please log in.\"}");
+                                                })
+                                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                                                        response.getWriter().write(
+                                                                        "{\"error\": \"You do not have permission to access this resource.\"}");
+                                                })) // authentication
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authenticationProvider(authenticationProvider)

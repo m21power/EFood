@@ -20,7 +20,7 @@ import EFood.services.UserService;
 import EFood.utils.CloudinaryService;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -39,7 +39,6 @@ public class UserController {
         try {
             var image_url = cloudinaryService.uploadFile(logo);
             var user = new UserModel();
-            user.setIsAdmin(true);
             user.setLogoUrl(image_url);
             user.setPassword(password);
             user.setPhoneNumber(phoneNumber);
@@ -64,7 +63,7 @@ public class UserController {
     // null));
     // }
     // }
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserByID(@PathVariable Long id) {
         var result = userService.getUserByID(id);

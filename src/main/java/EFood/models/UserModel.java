@@ -14,13 +14,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
+@Table(name = "user_table")
 @Entity
 public class UserModel implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
@@ -29,8 +34,9 @@ public class UserModel implements UserDetails {
 
     @Column(name = "role", nullable = false)
     private String role;
-    private Boolean isAdmin = false;
+
     private String logoUrl = "";
+
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
     private Date createdAt;
@@ -43,11 +49,10 @@ public class UserModel implements UserDetails {
         this.password = password;
     }
 
-    public UserModel(String name, String phoneNumber, String password, String logoUrl, Boolean isAdmin) {
+    public UserModel(String name, String phoneNumber, String password, String logoUrl) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.password = password;
-        this.isAdmin = isAdmin;
         this.logoUrl = logoUrl;
     }
 
@@ -65,10 +70,6 @@ public class UserModel implements UserDetails {
 
     public String getLogoUrl() {
         return this.logoUrl;
-    }
-
-    public void setIsAdmin(Boolean isAdmin) {
-        this.isAdmin = isAdmin;
     }
 
     public void setName(String name) {
@@ -105,10 +106,6 @@ public class UserModel implements UserDetails {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Boolean getIsAdmin() {
-        return this.isAdmin;
     }
 
     @Override

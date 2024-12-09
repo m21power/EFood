@@ -2,6 +2,7 @@ package EFood.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class FoodController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> createFood(
             @RequestParam("name") String name,
@@ -44,6 +46,7 @@ public class FoodController {
         return ResponseEntity.ok(new ApiResponse("food posted successfully", true, result));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllFoods() {
         var result = foodService.getAllFoods();
@@ -54,6 +57,7 @@ public class FoodController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getFoodById(@PathVariable Long id) {
         var result = foodService.getFoodByID(id);
@@ -64,6 +68,7 @@ public class FoodController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateFood(@PathVariable Long id, @RequestBody FoodModel food) {
         try {
@@ -74,6 +79,7 @@ public class FoodController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFood(@PathVariable Long id) {
         try {

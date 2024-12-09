@@ -46,9 +46,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = getTokenFromCookies(request);
-            final String userEmail = jwtService.extractUsername(jwt);
+
             if (jwt != null && jwtService.isTokenValid(jwt,
                     userDetailsService.loadUserByUsername(jwtService.extractUsername(jwt)))) {
+                final String userEmail = jwtService.extractUsername(jwt);
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -66,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getRequestURI().startsWith("/auth/login");
+        return request.getRequestURI().startsWith("/auth/login") || request.getRequestURI().startsWith("/auth/signup");
     }
 
 }

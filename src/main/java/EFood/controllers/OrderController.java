@@ -3,6 +3,7 @@ package EFood.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,7 @@ public class OrderController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping() // based on user id
     public ResponseEntity<?> getOrderByUserId(@RequestParam Long userId) {
         try {
@@ -50,6 +52,7 @@ public class OrderController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}") // based on order id
     public ResponseEntity<?> getOrderById(@PathVariable Long id) {
         try {
@@ -60,6 +63,7 @@ public class OrderController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/status/{id}") // order id
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestParam String status) {
         try {
