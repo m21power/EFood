@@ -3,18 +3,22 @@ FROM openjdk:17-jdk-slim
 
 # Set the working directory in the container
 WORKDIR /app
-# Copy the .env file into the container
-COPY .env /app/.env
-# Copy the Maven wrapper and pom.xml
-COPY . /app
 
-# Install Maven
-RUN apt-get update && apt-get install -y maven
+COPY .env /app/.env
+# Copy only necessary files for Maven build
+COPY pom.xml mvnw ./
+COPY .mvn .mvn
+
+# Resolve dependencies (this step will cache dependencies)
+RUN ./mvnw dependency:resolve
+
+# Copy the rest of the application code
+COPY src src
 
 # Build the Spring Boot application
 RUN ./mvnw clean package
 
-# Expose the application port
+# Expose the application port (default Spring Boot port is 8080)
 EXPOSE 8080
 
 # Run the Spring Boot application
