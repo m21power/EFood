@@ -17,4 +17,4 @@ RUN ./mvnw clean package
 EXPOSE 8080
 
 # Run the Spring Boot application
-CMD ["java", "-jar", "target/*.jar"]
+CMD ["java", "-jar", "target/EFood-0.0.1-SNAPSHOT.jar"]
