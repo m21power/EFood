@@ -60,7 +60,7 @@ public class SecurityConfiguration {
         CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
 
-                configuration.setAllowedOrigins(List.of("http://localhost:8080"));
+                configuration.setAllowedOrigins(List.of("https://efood.vercel.app"));
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
                 configuration.setAllowedHeaders(List.of(
                                 "Authorization",
