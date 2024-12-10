@@ -3,7 +3,8 @@ FROM openjdk:17-jdk-slim
 
 # Set the working directory in the container
 WORKDIR /app
-
+# Copy the .env file into the container
+COPY .env /app/.env
 # Copy the Maven wrapper and pom.xml
 COPY . /app
 
