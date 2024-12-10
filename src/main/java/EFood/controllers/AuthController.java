@@ -11,6 +11,7 @@ import EFood.Payloads.loginPayload;
 import EFood.Payloads.signUpPayload;
 import EFood.config.ApiResponse;
 import EFood.services.AuthenticationService;
+import EFood.utils.UserModelResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/auth")
@@ -23,7 +24,9 @@ public class AuthController {
     public ResponseEntity<?> signUp(@RequestBody signUpPayload user) {
         try {
             var result = authenticationService.signUp(user);
-            return ResponseEntity.ok(new ApiResponse("Registered Successful", true, result));
+            UserModelResponse um = new UserModelResponse(result.getId(), result.getName(), result.getPhoneNumber(),
+                    result.getPassword(), result.getRole(), result.getLogoUrl(), result.getCreatedAt());
+            return ResponseEntity.ok(new ApiResponse("Registered Successful", true, um));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(new ApiResponse(e.getMessage(), false, null));
         }

@@ -1,5 +1,7 @@
 package EFood.controllers;
 
+import java.security.PrivateKey;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,9 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import EFood.config.ApiResponse;
+import EFood.services.JwtService;
 import EFood.services.OrderService;
+import EFood.services.UserService;
 import EFood.utils.OrderRequest;
 import EFood.utils.UpdateOrderRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -26,10 +32,17 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
         try {
+            if (!isAuthenticated(request, orderRequest.getUserId())) {
+                return ResponseEntity.status(401).body(new ApiResponse("Authentication required", false, null));
+            }
             var result = orderService.createOrder(orderRequest.getUserId(), orderRequest.getOrderItems());
             return ResponseEntity.ok(new ApiResponse("Ordered successfully", true, result));
         } catch (IllegalArgumentException e) {
@@ -78,7 +91,8 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrder(@PathVariable Long id, @RequestBody UpdateOrderRequest updateRequest) {
+    public ResponseEntity<?> updateOrder(@PathVariable Long id, @RequestBody UpdateOrderRequest updateRequest,
+            HttpServletRequest request) {
         try {
             var result = orderService.updateOrder(id, updateRequest);
             return ResponseEntity.ok(new ApiResponse("updated successfully", true,
@@ -98,5 +112,40 @@ public class OrderController {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
         }
 
+    }
+
+    public Boolean isAuthenticated(HttpServletRequest request, Long id) {
+        Cookie[] cookies = request.getCookies();
+        // Find the token in the cookies
+        String token = null;
+        for (Cookie cookie : cookies) {
+            if ("auth_token".equals(cookie.getName())) {
+                token = cookie.getValue();
+                break;
+            }
+        }
+
+        String phoneNumber = jwtService.extractUsername(token);
+        var oldUser = userService.findByPhoneNumber(phoneNumber);
+        return oldUser.get().getId() == id;
+    }
+
+    public Long getUserId(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        // Find the token in the cookies
+        String token = null;
+        for (Cookie cookie : cookies) {
+            if ("auth_token".equals(cookie.getName())) {
+                token = cookie.getValue();
+                break;
+            }
+        }
+        if (token == null) {
+            return 0L;
+        }
+
+        String phoneNumber = jwtService.extractUsername(token);
+        var oldUser = userService.findByPhoneNumber(phoneNumber);
+        return oldUser.get().getId();
     }
 }

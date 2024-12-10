@@ -30,10 +30,12 @@ public class SecurityConfiguration {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/auth/**").permitAll() // Public endpoints
+                                                .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**",
+                                                                "/swagger-ui.html")
+                                                .permitAll() // Public endpoints
                                                 .requestMatchers("/api/foods/**").hasRole("ADMIN")
-                                                .requestMatchers("/api/orders/**").hasAnyRole("ADMIN", "USER")
-                                                .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "USER")
+                                                .requestMatchers("/api/orders/**", "/api/users/**")
+                                                .hasAnyRole("ADMIN", "USER")
                                                 .anyRequest().authenticated()) // All other requests require
                                 .exceptionHandling(exceptionHandling -> exceptionHandling
                                                 .authenticationEntryPoint((request, response, authException) -> {

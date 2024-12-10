@@ -43,7 +43,21 @@ public class AuthenticationService {
 
         UserModel user = userRepository.findByPhoneNumber(input.getPhoneNumber())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        setCookie(user, response);
+        // // Generate the JWT
+        // String token = jwtService.generateToken(user, user.getRole());
+        // // Create a cookie with the token
+        // Cookie jwtCookie = new Cookie("auth_token", token);
+        // jwtCookie.setHttpOnly(true); // Prevent access via JavaScript
+        // jwtCookie.setSecure(true); // Use only over HTTPS
+        // jwtCookie.setPath("/"); // Cookie accessible to all endpoints
+        // jwtCookie.setMaxAge(30 * 24 * 60 * 60); // Expiry in seconds (30 days)
 
+        // // Add the cookie to the response
+        // response.addCookie(jwtCookie);
+    }
+
+    public void setCookie(UserModel user, HttpServletResponse response) {
         // Generate the JWT
         String token = jwtService.generateToken(user, user.getRole());
         // Create a cookie with the token
@@ -55,5 +69,6 @@ public class AuthenticationService {
 
         // Add the cookie to the response
         response.addCookie(jwtCookie);
+
     }
 }
