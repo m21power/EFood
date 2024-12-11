@@ -25,7 +25,7 @@ public class AuthController {
         try {
             var result = authenticationService.signUp(user);
             UserModelResponse um = new UserModelResponse(result.getId(), result.getName(), result.getPhoneNumber(),
-                    result.getPassword(), result.getRole(), result.getLogoUrl(), result.getCreatedAt());
+                    result.getPassword(), result.getLogoUrl(), result.getRole(), result.getCreatedAt());
             return ResponseEntity.ok(new ApiResponse("Registered Successful", true, um));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(new ApiResponse(e.getMessage(), false, null));

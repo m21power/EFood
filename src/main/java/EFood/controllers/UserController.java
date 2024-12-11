@@ -6,10 +6,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,45 +40,6 @@ public class UserController {
     private AuthenticationService authenticationService;
     @Autowired
     private JwtService jwtService;
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/admin")
-    public ResponseEntity<?> registerAdmin(
-            @RequestParam(value = "logo") MultipartFile logo,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "phoneNumber") String phoneNumber,
-            @RequestParam(value = "password") String password,
-            HttpServletResponse response
-
-    ) {
-        try {
-            var user = new UserModel();
-            if (logo != null) {
-                var image_url = cloudinaryService.uploadFile(logo);
-                user.setLogoUrl(image_url);
-            }
-            if (password != "") {
-                user.setPassword(password);
-            }
-            if (phoneNumber != "") {
-                user.setPhoneNumber(phoneNumber);
-            }
-            if (name != "") {
-                user.setName(name);
-            }
-
-            user.setRole("ROLE_ADMIN");
-
-            var result = userService.registerAdmin(user);
-            if (phoneNumber != "") {
-                authenticationService.setCookie(result, response);
-            }
-            return ResponseEntity.ok(new ApiResponse("Registered Successful", true,
-                    result));
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(new ApiResponse(e.getMessage(), false, null));
-        }
-    }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/admin")
@@ -160,15 +121,16 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody userPayload user,
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestBody userPayload user,
             HttpServletResponse response, HttpServletRequest request) {
-        try {
-            if (!isAuthenticated(request, id)) {
-                return ResponseEntity.status(401)
-                        .body(new ApiResponse("You are not authorized to update", false, null));
-
+        Long id = getUserId(request);
+        if (id == 0) {
+            if (id == 0) {
+                return ResponseEntity.status(404).body(new ApiResponse("user not found", false, null));
             }
+        }
+        try {
             var User = toUserModel(user);
             var result = userService.updateUser(id, User);
             if (User.getPhoneNumber() != "") {
@@ -187,10 +149,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id, HttpServletRequest request) {
         try {
-            if (!isAuthenticated(request, id)) {
-                return ResponseEntity.status(401)
-                        .body(new ApiResponse("You are not authorized to delete", false, null));
+            if (!isAdmin(request)) {
+                if (!isAuthenticated(request, id)) {
+                    return ResponseEntity.status(401)
+                            .body(new ApiResponse("You are not authorized to delete", false, null));
 
+                }
             }
             userService.deleteUser(id);
             return ResponseEntity.ok(new ApiResponse("delete successfully", true, null));
@@ -251,5 +215,22 @@ public class UserController {
         String phoneNumber = jwtService.extractUsername(token);
         var oldUser = userService.findByPhoneNumber(phoneNumber);
         return oldUser.get().getId();
+    }
+
+    public Boolean isAdmin(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        // Find the token in the cookies
+        String token = null;
+        for (Cookie cookie : cookies) {
+            if ("auth_token".equals(cookie.getName())) {
+                token = cookie.getValue();
+                break;
+            }
+        }
+        if (token == null) {
+            throw new InternalAuthenticationServiceException("you are not authorized");
+        }
+        String role = jwtService.extractRole(token);
+        return role.equals("ROLE_ADMIN");
     }
 }
