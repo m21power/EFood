@@ -35,8 +35,8 @@ public class EFoodApplication {
 		System.setProperty("datasource.username", dbUsername);
 		System.setProperty("datasource.password", dbPassword);
 		System.setProperty("cloud.api.secret", cloud_api_secret);
-		System.setProperty("could.api.key", cloud_api_key);
-		System.setProperty("could.name", cloud_name);
+		System.setProperty("cloud.api.key", cloud_api_key);
+		System.setProperty("cloud.name", cloud_name);
 		System.setProperty("jwt.secret.key", jwt_secret_key);
 		SpringApplication.run(EFoodApplication.class, args);
 	}

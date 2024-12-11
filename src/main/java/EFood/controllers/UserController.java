@@ -25,6 +25,7 @@ import EFood.services.JwtService;
 import EFood.services.UserService;
 import EFood.utils.CloudinaryService;
 import EFood.utils.UserModelResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +42,7 @@ public class UserController {
     @Autowired
     private JwtService jwtService;
 
+    @Operation(description = "for updating admins info, all of them are optional u can pass whatever you want to update or insert")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/admin")
     public ResponseEntity<?> updateAdmin(
@@ -78,6 +80,7 @@ public class UserController {
 
     }
 
+    @Operation(description = "getting a user using id of the user, only admin can do this")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserByID(@PathVariable Long id) {
@@ -90,6 +93,7 @@ public class UserController {
         }
     }
 
+    @Operation(description = "getting all the users in the database, only admin can do this")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllUser() {
@@ -106,6 +110,7 @@ public class UserController {
         }
     }
 
+    @Operation(description = "getting a user based on the phonumber, only admin can do this")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/phone")
     public ResponseEntity<?> getByPhoneNumber(@RequestParam("PhoneNumber") String phoneNumber) {
@@ -121,6 +126,7 @@ public class UserController {
         }
     }
 
+    @Operation(description = "update the content of the user, all of them are optional, both admin and user can access")
     @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody userPayload user,
             HttpServletResponse response, HttpServletRequest request) {
@@ -146,6 +152,7 @@ public class UserController {
 
     }
 
+    @Operation(description = "delete user, admin can delete anyone, but a user can delete itself only")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id, HttpServletRequest request) {
         try {
@@ -162,6 +169,22 @@ public class UserController {
             return ResponseEntity.status(404).body(new ApiResponse(e.getMessage(), false, null));
         }
 
+    }
+
+    @Operation(description = "for logout the user")
+    @DeleteMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        // Delete the JWT token from the cookie
+        Cookie cookie = new Cookie("auth_token", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+
+        // ovveride it
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(new ApiResponse("Logged out successfully, token deleted.", true, null));
     }
 
     public UserModel toUserModel(userPayload user) {

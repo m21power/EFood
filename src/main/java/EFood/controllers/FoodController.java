@@ -18,6 +18,7 @@ import EFood.config.ApiResponse;
 import EFood.models.FoodModel;
 import EFood.services.FoodService;
 import EFood.utils.CloudinaryService;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/api/foods")
@@ -27,6 +28,7 @@ public class FoodController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @Operation(description = "for posting food, all of the field are required , only admin can do this")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<?> createFood(
@@ -37,6 +39,7 @@ public class FoodController {
 
     ) {
         var image_url = cloudinaryService.uploadFile(image);
+        System.out.println(image_url);
         var food = new FoodModel();
         food.setDescription(description);
         food.setName(name);
@@ -46,7 +49,7 @@ public class FoodController {
         return ResponseEntity.ok(new ApiResponse("food posted successfully", true, result));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(description = "to get all the food in the database, only admin can this")
     @GetMapping
     public ResponseEntity<?> getAllFoods() {
         var result = foodService.getAllFoods();
@@ -57,7 +60,7 @@ public class FoodController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(description = "to get food by id, only admin can do this")
     @GetMapping("/{id}")
     public ResponseEntity<?> getFoodById(@PathVariable Long id) {
         var result = foodService.getFoodByID(id);
@@ -68,7 +71,7 @@ public class FoodController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(description = "to update content of the food based on food's id, including availability of the food")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateFood(@PathVariable Long id, @RequestBody FoodModel food) {
         try {
@@ -79,7 +82,7 @@ public class FoodController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(description = "to delete the food based on the food's id")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFood(@PathVariable Long id) {
         try {
