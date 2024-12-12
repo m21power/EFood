@@ -1,5 +1,12 @@
 package EFood.controllers;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -19,6 +26,7 @@ import EFood.services.JwtService;
 import EFood.services.OrderService;
 import EFood.services.UserService;
 import EFood.utils.Order;
+import EFood.utils.OrderResponse;
 import EFood.utils.UpdateOrderRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
@@ -81,11 +89,91 @@ public class OrderController {
 
     @Operation(description = "it is for admin's order section,it is admin's endpoint")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/admin") // order for admin sort based on time
+    @GetMapping("/new") // order for admin sort based on time
     public ResponseEntity<?> getOrders() {
         try {
             var result = orderService.getOrders();
-            return ResponseEntity.ok(new ApiResponse("your order", true, result));
+            List<OrderResponse> res = new ArrayList<>();
+            for (OrderResponse order : result) {
+                if (!order.getStatus().equals("READY")) {
+                    res.add(order);
+                }
+            }
+            Collections.sort(res, Comparator.comparing(order -> order.getCreatedAt()));
+            return ResponseEntity.ok(new ApiResponse("new order", true, res));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
+        }
+    }
+
+    @Operation(description = "get all,daily orders for admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/daily")
+    public ResponseEntity<?> getDailyOrder() {
+        try {
+            var today = LocalDate.now();
+            var result = orderService.getOrders();
+            List<OrderResponse> res = new ArrayList<>();
+            for (OrderResponse order : result) {
+                if (ChronoUnit.DAYS.between(order.getCreatedAt().toLocalDate(), today) == 0) {
+                    res.add(order);
+                }
+            }
+            Collections.sort(res, Comparator.comparing(order -> order.getCreatedAt()));
+            return ResponseEntity.ok(new ApiResponse("daily order", true, result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
+        }
+    }
+
+    @Operation(description = "get all,weekly orders for admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/weekly")
+    public ResponseEntity<?> getWeeklyOrder() {
+        try {
+            var today = LocalDate.now();
+            var result = orderService.getOrders();
+            List<OrderResponse> res = new ArrayList<>();
+            for (OrderResponse order : result) {
+                if (ChronoUnit.DAYS.between(order.getCreatedAt().toLocalDate(), today) <= 7) {
+                    res.add(order);
+                }
+            }
+            Collections.sort(res, Comparator.comparing(order -> order.getCreatedAt()));
+            return ResponseEntity.ok(new ApiResponse("weekly order", true, result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
+        }
+    }
+
+    @Operation(description = "get all,weekly orders for admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/monthly")
+    public ResponseEntity<?> getMonthlyOrder() {
+        try {
+            var today = LocalDate.now();
+            var result = orderService.getOrders();
+            List<OrderResponse> res = new ArrayList<>();
+            for (OrderResponse order : result) {
+                if (ChronoUnit.MONTHS.between(order.getCreatedAt().toLocalDate(), today) == 0) {
+                    res.add(order);
+                }
+            }
+            Collections.sort(res, Comparator.comparing(order -> order.getCreatedAt()));
+            return ResponseEntity.ok(new ApiResponse("monthly order", true, result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
+        }
+    }
+
+    @Operation(description = "orders history for the admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/history")
+    public ResponseEntity<?> getAllOrders() {
+        try {
+            var result = orderService.getOrders();
+            Collections.sort(result, Comparator.comparing(order -> order.getCreatedAt()));
+            return ResponseEntity.ok(new ApiResponse("order history", true, result));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
         }
