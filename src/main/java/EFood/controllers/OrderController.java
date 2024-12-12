@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import EFood.config.ApiResponse;
+import EFood.models.OrderItemModel;
+import EFood.repositories.FoodRespository;
+import EFood.services.FoodService;
 import EFood.services.JwtService;
 import EFood.services.OrderService;
 import EFood.services.UserService;
@@ -43,6 +46,10 @@ public class OrderController {
     private JwtService jwtService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private FoodService foodService;
+    @Autowired
+    private FoodRespository foodRespository;
 
     @Operation(description = "naomi don't panic😁, you are supposed to send list of [{foodId,quantity},{foodId,quantity}]")
     @PostMapping
@@ -53,6 +60,19 @@ public class OrderController {
                 return ResponseEntity.status(401).body(new ApiResponse("Authentication required", false, null));
             }
             var result = orderService.createOrder(userId, order.getOrderItems());
+            for (OrderItemModel item : order.getOrderItems()) {
+                var food = foodService.getFoodByID(item.getFoodId());
+                if (food.get().getQuantity() <= 2) {
+                    // Notify admin via WebSocket about the new order
+                    messagingTemplate.convertAndSend("/topic/admin", "Low stock: " + food.get().getName());
+                }
+                if (food.get().getQuantity() <= 0) {
+                    food.get().setIsAvailable(false);
+                    foodRespository.save(food.get());
+                    messagingTemplate.convertAndSend("/topic/admin", food.get().getName() + " is now unavailable.");
+                }
+
+            }
             return ResponseEntity.ok(new ApiResponse("Ordered successfully", true, result));
         } catch (IllegalArgumentException e) {
             // Handle bad requests

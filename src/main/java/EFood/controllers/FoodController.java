@@ -35,7 +35,8 @@ public class FoodController {
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("image") MultipartFile image,
-            @RequestParam("price") double price
+            @RequestParam("price") double price,
+            @RequestParam("quantity") Integer quantity
 
     ) {
         var image_url = cloudinaryService.uploadFile(image);
@@ -45,6 +46,7 @@ public class FoodController {
         food.setName(name);
         food.setPrice(price);
         food.setImageUrl(image_url);
+        food.setQuantity(quantity);
         var result = foodService.createFood(food);
         return ResponseEntity.ok(new ApiResponse("food posted successfully", true, result));
     }

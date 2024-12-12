@@ -44,6 +44,9 @@ public class FoodService {
         if (food.getPrice() != 0) {
             oldFood.setPrice(food.getPrice());
         }
+        if (food.getQuantity() != 0) {
+            oldFood.setQuantity(food.getQuantity());
+        }
         var result = foodRespository.save(oldFood);
         return result;
     }

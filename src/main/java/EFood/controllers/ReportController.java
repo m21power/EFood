@@ -28,22 +28,6 @@ public class ReportController {
     @Autowired
     private OrderService orderService;
 
-    // "id": 2,
-    // "status": "Pending",
-    // "totalPrice": 2300,
-    // "items": [
-    // {
-    // "food": {
-    // "id": 1,
-    // "name": "BURGER",
-    // "description": "THIS IS BURGER is delicious",
-    // "imageUrl":
-    // "https://res.cloudinary.com/dl6vahv6t/image/upload/v1733917934/e8w94a8akvgb4dpyjg3n.jpg",
-    // "price": 350,
-    // "isAvailable": true
-    // },
-    // "quantity": 2
-    // }
     @GetMapping("/daily")
     public ResponseEntity<?> getDailyReport() {
         try {

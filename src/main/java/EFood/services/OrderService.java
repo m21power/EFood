@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import EFood.models.FoodModel;
 import EFood.models.OrderItemModel;
 import EFood.models.OrderModel;
 import EFood.repositories.FoodRespository;
@@ -27,9 +28,12 @@ public class OrderService {
     private UserRepository userRepository;
     @Autowired
     private FoodRespository foodRespository;
+    @Autowired
+    private FoodService foodService;
 
     @Transactional
     public OrderResponse createOrder(Long userID, List<OrderItemModel> items) {
+        // [foodid,quantity]
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Order must have at least one item.");
         }
@@ -52,6 +56,12 @@ public class OrderService {
 
         // Link items to the order
         for (OrderItemModel item : items) {
+            var fid = item.getFoodId();
+            var fquantity = item.getQuantity();
+            var oldFood = foodService.getFoodByID(fid);
+            FoodModel f = new FoodModel();
+            f.setQuantity(oldFood.get().getQuantity() - fquantity);
+            foodService.updateFood(fid, f);
             item.setOrder(order);
         }
 

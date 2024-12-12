@@ -13,15 +13,26 @@ public class FoodModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String name;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
+
     @Column(nullable = false)
     private String imageUrl;
+
     @Column(nullable = false)
     private double price;
+
     private Boolean isAvailable = true;
+    @Column(nullable = false)
+    private Integer quantity;
+
+    public FoodModel(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public FoodModel(String name, String description, String imageUrl, double price) {
         this.name = name;
@@ -88,15 +99,21 @@ public class FoodModel {
         return this.isAvailable;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
     @Override
     public String toString() {
-        return "FoodModel{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", price=" + price +
-                ", isAvailable=" + isAvailable +
-                '}';
+        return "FoodModel [id=" + id + ", name=" + name + ", description=" + description + ", imageUrl=" + imageUrl
+                + ", price=" + price + ", isAvailable=" + isAvailable + ", quantity=" + quantity + "]";
     }
 }
