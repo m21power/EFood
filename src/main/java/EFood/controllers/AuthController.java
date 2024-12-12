@@ -21,7 +21,6 @@ public class AuthController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody signUpPayload user) {
         try {
