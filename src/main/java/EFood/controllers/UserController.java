@@ -152,6 +152,18 @@ public class UserController {
 
     }
 
+    @Operation(description = "it is to get my info without sending user id")
+    @GetMapping("/me")
+    public ResponseEntity<?> getMe(HttpServletRequest request) {
+        Long id = getUserId(request);
+        var result = userService.getUserByID(id);
+        if (result.isPresent()) {
+            return ResponseEntity.ok(new ApiResponse("user found", true, toUserModelResponse(result.get())));
+        } else {
+            return ResponseEntity.status(404).body(new ApiResponse("user not found", false, null));
+        }
+    }
+
     @Operation(description = "delete user, admin can delete anyone, but a user can delete itself only")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id, HttpServletRequest request) {

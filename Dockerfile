@@ -4,7 +4,6 @@ FROM openjdk:17-jdk-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# COPY .env /app/.env
 # Copy only necessary files for Maven build
 COPY pom.xml mvnw ./
 COPY .mvn .mvn

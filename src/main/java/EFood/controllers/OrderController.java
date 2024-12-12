@@ -18,6 +18,7 @@ import EFood.config.ApiResponse;
 import EFood.services.JwtService;
 import EFood.services.OrderService;
 import EFood.services.UserService;
+import EFood.utils.Order;
 import EFood.utils.OrderRequest;
 import EFood.utils.UpdateOrderRequest;
 import jakarta.servlet.http.Cookie;
@@ -34,14 +35,16 @@ public class OrderController {
     private JwtService jwtService;
     @Autowired
     private UserService userService;
+    // {orderItems:[{foodid,quantity}]}
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, HttpServletRequest request) {
+    public ResponseEntity<?> createOrder(@RequestBody Order order, HttpServletRequest request) {
         try {
-            if (!isAuthenticated(request, orderRequest.getUserId())) {
+            Long userId = getUserId(request);
+            if (!isAuthenticated(request, userId)) {
                 return ResponseEntity.status(401).body(new ApiResponse("Authentication required", false, null));
             }
-            var result = orderService.createOrder(orderRequest.getUserId(), orderRequest.getOrderItems());
+            var result = orderService.createOrder(userId, order.getOrderItems());
             return ResponseEntity.ok(new ApiResponse("Ordered successfully", true, result));
         } catch (IllegalArgumentException e) {
             // Handle bad requests
