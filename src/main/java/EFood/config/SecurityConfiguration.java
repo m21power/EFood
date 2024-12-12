@@ -29,6 +29,7 @@ public class SecurityConfiguration {
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http.csrf(csrf -> csrf.disable())
+                                .cors(c -> c.configurationSource(corsConfigurationSource()))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**",
                                                                 "/swagger-ui.html")
@@ -59,8 +60,7 @@ public class SecurityConfiguration {
         @Bean
         CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:3000",
-                                "https://efood-brvf.onrender.com"));
+                configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:3000"));
                 configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
                 configuration.setAllowedHeaders(List.of(
                                 "Authorization",
@@ -70,7 +70,7 @@ public class SecurityConfiguration {
                                 "Content-Disposition",
                                 "Origin"));
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
+                configuration.setAllowCredentials(true);
                 source.registerCorsConfiguration("/**", configuration);
 
                 return source;
