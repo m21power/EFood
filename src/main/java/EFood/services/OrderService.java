@@ -111,6 +111,15 @@ public class OrderService {
         return new OrderResponse(id, order.getStatus(), order.getCreatedAt(), totalPrice, orderResp);
     }
 
+    public List<OrderResponse> getOrders() {
+        var orders = orderRepository.findAll();
+        List<OrderResponse> result = new ArrayList<>();
+        for (OrderModel order : orders) {
+            result.add(getOrderById(order.getId()));
+        }
+        return result;
+    }
+
     public OrderModel updateStatus(Long id, String status) {
 
         var order = orderRepository.findById(id);

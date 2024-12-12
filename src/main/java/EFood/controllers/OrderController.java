@@ -19,8 +19,8 @@ import EFood.services.JwtService;
 import EFood.services.OrderService;
 import EFood.services.UserService;
 import EFood.utils.Order;
-import EFood.utils.OrderRequest;
 import EFood.utils.UpdateOrderRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -35,8 +35,8 @@ public class OrderController {
     private JwtService jwtService;
     @Autowired
     private UserService userService;
-    // {orderItems:[{foodid,quantity}]}
 
+    @Operation(description = "naomi don't panic😁, you are supposed to send list of [{foodId,quantity},{foodId,quantity}]")
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody Order order, HttpServletRequest request) {
         try {
@@ -55,9 +55,10 @@ public class OrderController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping() // based on user id
-    public ResponseEntity<?> getOrderByUserId(@RequestParam Long userId) {
+    @Operation(description = "this endpoint is for the user's order section")
+    @GetMapping() // get users order sort based on time,
+    public ResponseEntity<?> getOrderByUserId(HttpServletRequest request) {
+        Long userId = getUserId(request);
         try {
             var result = orderService.getOrderByUserId(userId);
             return ResponseEntity.ok(new ApiResponse("your order", true, result));
@@ -66,6 +67,7 @@ public class OrderController {
         }
     }
 
+    @Operation(description = "get orders by order id")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}") // based on order id
     public ResponseEntity<?> getOrderById(@PathVariable Long id) {
@@ -77,6 +79,19 @@ public class OrderController {
         }
     }
 
+    @Operation(description = "it is for admin's order section,it is admin's endpoint")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/admin") // order for admin sort based on time
+    public ResponseEntity<?> getOrders() {
+        try {
+            var result = orderService.getOrders();
+            return ResponseEntity.ok(new ApiResponse("your order", true, result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
+        }
+    }
+
+    @Operation(description = "this endpoint is for changing the status of the order based on order's id, only admin can do this")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/status/{id}") // order id
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestParam String status) {
@@ -91,6 +106,7 @@ public class OrderController {
 
     }
 
+    @Operation(description = "for updating the order, users can also access the endpoint")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateOrder(@PathVariable Long id, @RequestBody UpdateOrderRequest updateRequest,
             HttpServletRequest request) {
@@ -104,6 +120,7 @@ public class OrderController {
         }
     }
 
+    @Operation(description = "deleting order based on orders id")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
         try {
