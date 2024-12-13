@@ -57,6 +57,8 @@ public class AuthenticationService {
         jwtCookie.setSecure(false); // Use only over HTTPS
         jwtCookie.setPath("/"); // Cookie accessible to all endpoints
         jwtCookie.setMaxAge(30 * 24 * 60 * 60); // Expiry in seconds (30 days)
+        response.addHeader("Set-Cookie",
+                "auth_token=" + token + "; HttpOnly; Path=/; Max-Age=2592000; SameSite=None; Secure=false");
 
         // Add the cookie to the response
         response.addCookie(jwtCookie);
