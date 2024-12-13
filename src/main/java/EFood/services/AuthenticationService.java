@@ -54,7 +54,7 @@ public class AuthenticationService {
         Cookie jwtCookie = new Cookie("auth_token", token);
         jwtCookie.setHttpOnly(true); // Prevent access via JavaScript
         // boolean isSecure = !request.getServerName().equals("localhost");
-        jwtCookie.setSecure(true); // Use only over HTTPS
+        jwtCookie.setSecure(false); // Use only over HTTPS
         jwtCookie.setPath("/"); // Cookie accessible to all endpoints
         jwtCookie.setMaxAge(30 * 24 * 60 * 60); // Expiry in seconds (30 days)
 
