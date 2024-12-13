@@ -41,7 +41,6 @@ public class OrderService {
         // Validate user existence
         userRepository.findById(userID)
                 .orElseThrow(() -> new IllegalArgumentException("No user with this ID exists."));
-
         // Validate food items and availability
         for (OrderItemModel item : items) {
             var food = foodRespository.findById(item.getFoodId())
@@ -60,7 +59,10 @@ public class OrderService {
             var fquantity = item.getQuantity();
             var oldFood = foodService.getFoodByID(fid);
             FoodModel f = new FoodModel();
-            f.setQuantity(oldFood.get().getQuantity() - fquantity);
+            Integer temp = oldFood.get().getQuantity() - fquantity;
+            if (temp <= 0) {
+                f.setQuantity(0);
+            }
             foodService.updateFood(fid, f);
             item.setOrder(order);
         }

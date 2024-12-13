@@ -28,7 +28,7 @@ public class FoodModel {
 
     private Boolean isAvailable = true;
     @Column(nullable = false)
-    private Integer quantity;
+    private Integer quantity = -1;
 
     public FoodModel(Integer quantity) {
         this.quantity = quantity;
