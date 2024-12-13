@@ -12,6 +12,7 @@ import EFood.Payloads.signUpPayload;
 import EFood.models.UserModel;
 import EFood.repositories.UserRepository;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service
@@ -37,22 +38,23 @@ public class AuthenticationService {
         return userRepository.save(user);
     }
 
-    public void authenticate(loginPayload input, HttpServletResponse response) {
+    public void authenticate(loginPayload input, HttpServletResponse response, HttpServletRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(input.getPhoneNumber(), input.getPassword()));
 
         UserModel user = userRepository.findByPhoneNumber(input.getPhoneNumber())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        setCookie(user, response);
+        setCookie(user, response, request);
     }
 
-    public void setCookie(UserModel user, HttpServletResponse response) {
+    public void setCookie(UserModel user, HttpServletResponse response, HttpServletRequest request) {
         // Generate the JWT
         String token = jwtService.generateToken(user, user.getRole());
         // Create a cookie with the token
         Cookie jwtCookie = new Cookie("auth_token", token);
         jwtCookie.setHttpOnly(true); // Prevent access via JavaScript
-        jwtCookie.setSecure(true); // Use only over HTTPS
+        boolean isSecure = !request.getServerName().equals("localhost");
+        jwtCookie.setSecure(isSecure); // Use only over HTTPS
         jwtCookie.setPath("/"); // Cookie accessible to all endpoints
         jwtCookie.setMaxAge(30 * 24 * 60 * 60); // Expiry in seconds (30 days)
 

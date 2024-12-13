@@ -74,7 +74,7 @@ public class UserController {
 
         var result = userService.updateUser(adminId, user);
         if (phoneNumber != "") {
-            authenticationService.setCookie(result, response);
+            authenticationService.setCookie(result, response, request);
         }
         return ResponseEntity.ok(new ApiResponse("user found", true, toUserModelResponse(result)));
 
@@ -140,7 +140,7 @@ public class UserController {
             var User = toUserModel(user);
             var result = userService.updateUser(id, User);
             if (User.getPhoneNumber() != "") {
-                authenticationService.setCookie(result, response);
+                authenticationService.setCookie(result, response, request);
             }
             // System.out.println(result);
             return ResponseEntity.ok(new ApiResponse("Updating successfull", true, toUserModelResponse(result)));

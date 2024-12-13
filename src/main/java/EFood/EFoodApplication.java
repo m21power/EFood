@@ -21,7 +21,7 @@ public class EFoodApplication {
 		String cloud_api_key = System.getenv("CLOUD_API_KEY");
 		String cloud_api_secret = System.getenv("CLOUD_API_SECRET");
 
-		// // for checking in local host
+		// // // for checking in local host
 		// String dbUrl = dotenv.get("DB_URL");
 		// String dbUsername = dotenv.get("DB_USERNAME");
 		// String dbPassword = dotenv.get("DB_PASSWORD");

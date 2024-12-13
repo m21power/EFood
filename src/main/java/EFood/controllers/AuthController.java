@@ -12,6 +12,7 @@ import EFood.Payloads.signUpPayload;
 import EFood.config.ApiResponse;
 import EFood.services.AuthenticationService;
 import EFood.utils.UserModelResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/auth")
@@ -33,9 +34,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody loginPayload loginDto, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody loginPayload loginDto, HttpServletResponse response,
+            HttpServletRequest request) {
         // throw new AccessDeniedException("here");
-        authenticationService.authenticate(loginDto, response);
+        authenticationService.authenticate(loginDto, response, request);
         return ResponseEntity.ok(new ApiResponse("Logged in successfully", true, null));
     }
 
