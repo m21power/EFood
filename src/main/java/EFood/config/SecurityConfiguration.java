@@ -37,7 +37,8 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**",
                                                                 "/swagger-ui.html")
                                                 .permitAll() // Public endpoints
-                                                .requestMatchers("/api/foods/**", "/api/report/**").hasRole("ADMIN")
+                                                .requestMatchers("/api/report/**").hasRole("ADMIN")
+                                                .requestMatchers("/api/foods/**").hasAnyRole("ADMIN", "USER")
                                                 .requestMatchers("/api/orders/**", "/api/users/**")
                                                 .hasAnyRole("ADMIN", "USER")
                                                 .anyRequest().authenticated()) // All other requests require

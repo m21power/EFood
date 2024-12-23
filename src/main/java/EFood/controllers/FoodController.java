@@ -51,7 +51,7 @@ public class FoodController {
         return ResponseEntity.ok(new ApiResponse("food posted successfully", true, result));
     }
 
-    @Operation(description = "to get all the food in the database, only admin can this")
+    @Operation(description = "to get all the food in the database")
     @GetMapping
     public ResponseEntity<?> getAllFoods() {
         var result = foodService.getAllFoods();
@@ -62,7 +62,7 @@ public class FoodController {
 
     }
 
-    @Operation(description = "to get food by id, only admin can do this")
+    @Operation(description = "to get food by id")
     @GetMapping("/{id}")
     public ResponseEntity<?> getFoodById(@PathVariable Long id) {
         var result = foodService.getFoodByID(id);
@@ -73,6 +73,7 @@ public class FoodController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(description = "to update content of the food based on food's id, including availability of the food")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateFood(@PathVariable Long id, @RequestBody FoodModel food) {
@@ -84,6 +85,7 @@ public class FoodController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(description = "to delete the food based on the food's id")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFood(@PathVariable Long id) {
