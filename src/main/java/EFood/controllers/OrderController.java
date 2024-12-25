@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import EFood.Response.OrderNotification;
 import EFood.config.ApiResponse;
 import EFood.models.OrderItemModel;
 import EFood.repositories.FoodRespository;
@@ -210,7 +211,7 @@ public class OrderController {
             // Broadcast the update to the subscribed clients
             // messagingTemplate.convertAndSend("/topic/orders/" + id, status);
             var userId = order.getUserId();
-            messagingTemplate.convertAndSend("/topic/orders/user/" + userId, "Order " + id + " status updated to: " + status);
+            messagingTemplate.convertAndSend("/topic/orders/user/" + userId, new OrderNotification("Order status updated", id, status));
             return ResponseEntity.ok(new ApiResponse("status updated successfully", true, order));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
