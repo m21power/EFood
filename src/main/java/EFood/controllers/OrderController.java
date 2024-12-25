@@ -208,7 +208,9 @@ public class OrderController {
         try {
             var order = orderService.updateStatus(id, status);
             // Broadcast the update to the subscribed clients
-            messagingTemplate.convertAndSend("/topic/orders/" + id, status);
+            // messagingTemplate.convertAndSend("/topic/orders/" + id, status);
+            var userId = order.getUserId();
+            messagingTemplate.convertAndSend("/topic/orders/user/" + userId, "Order " + id + " status updated to: " + status);
             return ResponseEntity.ok(new ApiResponse("status updated successfully", true, order));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
