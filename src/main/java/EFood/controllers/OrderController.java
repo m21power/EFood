@@ -62,17 +62,19 @@ public class OrderController {
             var result = orderService.createOrder(userId, order.getOrderItems());
             for (OrderItemModel item : order.getOrderItems()) {
                 var food = foodService.getFoodByID(item.getFoodId());
+                String notification = "New Order: " + food.get().getName();
                 if (food.get().getQuantity() <= 2) {
-                    // Notify admin via WebSocket about the new order
-                    messagingTemplate.convertAndSend("/topic/admin", "Low stock: " + food.get().getName());
+                    notification += " (Low stock)";
                 }
+                messagingTemplate.convertAndSend("/topic/admin", notification);
+            
                 if (food.get().getQuantity() <= 0) {
                     food.get().setIsAvailable(false);
                     foodRespository.save(food.get());
                     messagingTemplate.convertAndSend("/topic/admin", food.get().getName() + " is now unavailable.");
                 }
-
             }
+            
             return ResponseEntity.ok(new ApiResponse("Ordered successfully", true, result));
         } catch (IllegalArgumentException e) {
             // Handle bad requests
