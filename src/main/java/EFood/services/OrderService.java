@@ -85,27 +85,40 @@ public class OrderService {
 
     }
 
-    public OrderResponse getOrderByUserId(Long userId) {
-        var order = orderRepository.findByUserId(userId);
-        var items = orderItemRepository.findByOrderId(order.getId());
-        List<OrderItemResponse> orderResp = new ArrayList<>();
-        double totalPrice = 0;
-        for (OrderItemModel item : items) {
-            var foodId = item.getFoodId();
-            var fd = foodRespository.findById(foodId);
-            var food = fd.orElseThrow(() -> new IllegalArgumentException("it is empty"));
-            var quantity = item.getQuantity();
-            totalPrice += (quantity * food.getPrice());
-            OrderItemResponse ord = new OrderItemResponse(food, quantity);
-            orderResp.add(ord);
+    public List<OrderResponse> getOrderByUserId(Long userId) {
+        List<OrderResponse> result = new ArrayList<>();
+    
+        // Fetch all orders for the given user ID
+        var orders = orderRepository.findAllByUserId(userId);
+    
+        for (var order : orders) {
+            var items = orderItemRepository.findByOrderId(order.getId());
+            List<OrderItemResponse> orderItemResponses = new ArrayList<>();
+            double totalPrice = 0;
+    
+            // Process each order item
+            for (OrderItemModel item : items) {
+                var foodId = item.getFoodId();
+                var food = foodRespository.findById(foodId)
+                                          .orElseThrow(() -> new IllegalArgumentException("Food not found for ID: " + foodId));
+                var quantity = item.getQuantity();
+                totalPrice += (quantity * food.getPrice());
+                orderItemResponses.add(new OrderItemResponse(food, quantity));
+            }
+    
+            // Create OrderResponse and add to the result list
+            result.add(new OrderResponse(order.getId(), order.getStatus(), order.getCreatedAt(), totalPrice, orderItemResponses));
         }
-
-        return new OrderResponse(order.getId(), order.getStatus(), order.getCreatedAt(), totalPrice, orderResp);
+    
+        return result;
     }
+    
 
     public OrderResponse getOrderById(Long id) {
+        System.out.println("Let's see order id "+id);
         var order = orderRepository.findById(id).get();
         var items = orderItemRepository.findByOrderId(id);
+        System.out.println("size of the item" + items.size());
         if (items.isEmpty()) {
             throw new IllegalArgumentException("no order exist");
         }
@@ -113,6 +126,9 @@ public class OrderService {
         List<OrderItemResponse> orderResp = new ArrayList<>();
         for (OrderItemModel item : items) {
             var foodId = item.getFoodId();
+            System.out.println("item id: " + item.getId());
+            System.out.println("item quantity: " + item.getQuantity());
+            System.out.println("Let's see food id "+ foodId);
             var fd = foodRespository.findById(foodId);
             var food = fd.orElseThrow(() -> new IllegalArgumentException("it is empty"));
             var quantity = item.getQuantity();

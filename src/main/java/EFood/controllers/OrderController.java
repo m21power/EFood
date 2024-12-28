@@ -195,8 +195,9 @@ public class OrderController {
     public ResponseEntity<?> getAllOrders() {
         try {
             var result = orderService.getOrders();
-            Collections.sort(result, Comparator.comparing(order -> order.getCreatedAt()));
-            return ResponseEntity.ok(new ApiResponse("order history", true, result));
+            List<OrderResponse> res = new ArrayList<>(result);
+            Collections.sort(res, Comparator.comparing(order -> order.getCreatedAt()));
+            return ResponseEntity.ok(new ApiResponse("order history", true, res));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
         }
