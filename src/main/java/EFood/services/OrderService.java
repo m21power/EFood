@@ -115,10 +115,8 @@ public class OrderService {
     
 
     public OrderResponse getOrderById(Long id) {
-        System.out.println("Let's see order id "+id);
         var order = orderRepository.findById(id).get();
         var items = orderItemRepository.findByOrderId(id);
-        System.out.println("size of the item" + items.size());
         if (items.isEmpty()) {
             throw new IllegalArgumentException("no order exist");
         }
@@ -126,9 +124,6 @@ public class OrderService {
         List<OrderItemResponse> orderResp = new ArrayList<>();
         for (OrderItemModel item : items) {
             var foodId = item.getFoodId();
-            System.out.println("item id: " + item.getId());
-            System.out.println("item quantity: " + item.getQuantity());
-            System.out.println("Let's see food id "+ foodId);
             var fd = foodRespository.findById(foodId);
             var food = fd.orElseThrow(() -> new IllegalArgumentException("it is empty"));
             var quantity = item.getQuantity();
