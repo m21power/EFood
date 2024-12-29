@@ -118,7 +118,7 @@ public class OrderController {
             var result = orderService.getOrders();
             List<OrderResponse> res = new ArrayList<>();
             for (OrderResponse order : result) {
-                if (!order.getStatus().equals("READY")) {
+                if (!order.getStatus().equals("Delivered")) {
                     res.add(order);
                 }
             }
