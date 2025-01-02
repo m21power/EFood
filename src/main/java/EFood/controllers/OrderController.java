@@ -138,12 +138,13 @@ public class OrderController {
             var result = orderService.getOrders();
             List<OrderResponse> res = new ArrayList<>();
             for (OrderResponse order : result) {
-                if (ChronoUnit.DAYS.between(order.getCreatedAt().toLocalDate(), today) == 0) {
+               
+                if (order.getCreatedAt().toLocalDate().isEqual(today)) {
                     res.add(order);
                 }
             }
             Collections.sort(res, Comparator.comparing(order -> order.getCreatedAt()));
-            return ResponseEntity.ok(new ApiResponse("daily order", true, result));
+            return ResponseEntity.ok(new ApiResponse("daily order", true, res));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
         }
@@ -163,7 +164,7 @@ public class OrderController {
                 }
             }
             Collections.sort(res, Comparator.comparing(order -> order.getCreatedAt()));
-            return ResponseEntity.ok(new ApiResponse("weekly order", true, result));
+            return ResponseEntity.ok(new ApiResponse("weekly order", true, res));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
         }
@@ -183,7 +184,7 @@ public class OrderController {
                 }
             }
             Collections.sort(res, Comparator.comparing(order -> order.getCreatedAt()));
-            return ResponseEntity.ok(new ApiResponse("monthly order", true, result));
+            return ResponseEntity.ok(new ApiResponse("monthly order", true, res));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
         }
