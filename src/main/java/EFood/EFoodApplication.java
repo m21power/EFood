@@ -10,7 +10,7 @@ public class EFoodApplication {
 
 	public static void main(String[] args) {
 		// Load the .env file
-		Dotenv dotenv = Dotenv.load();
+		// Dotenv dotenv = Dotenv.load();
 
 		// Retrieve credentials from the .env file for hosting
 		String dbUrl = System.getenv("DB_URL");
