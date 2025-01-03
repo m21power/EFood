@@ -23,7 +23,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody signUpPayload user) {
-        try {
+        try {     
             var result = authenticationService.signUp(user);
             UserModelResponse um = new UserModelResponse(result.getId(), result.getName(), result.getPhoneNumber(),
                     result.getPassword(), result.getLogoUrl(), result.getRole(), result.getCreatedAt());

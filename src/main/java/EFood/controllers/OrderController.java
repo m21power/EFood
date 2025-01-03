@@ -63,7 +63,7 @@ public class OrderController {
             var result = orderService.createOrder(userId, order.getOrderItems());
             for (OrderItemModel item : order.getOrderItems()) {
                 var food = foodService.getFoodByID(item.getFoodId());
-                String notification = "New Order: " + food.get().getName();
+                String notification = "New order is placed!";
                 if (food.get().getQuantity() <= 2) {
                     notification += " (Low stock)";
                 }
@@ -240,7 +240,7 @@ public class OrderController {
     public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
         try {
             orderService.deleteOrder(id);
-            return ResponseEntity.ok(new ApiResponse("delted successfully", true, null));
+            return ResponseEntity.ok(new ApiResponse("deleted successfully", true, null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
         }
