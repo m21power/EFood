@@ -24,7 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Define the WebSocket endpoint that clients will connect to
         // registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
         registry.addEndpoint("/ws")
-        .setAllowedOrigins("https://localhost:3000") // Match your CORS configuration
+        .setAllowedOrigins("http://localhost:3000","https://e-food-amber.vercel.app") // Match your CORS configuration
         .withSockJS();
 
     }
